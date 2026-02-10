@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "glpi.fullname" . }}
+  labels:
+{{ include "glpi.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+{{ include "glpi.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "glpi.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: glpi
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            - name: GLPI_DB_HOST
+              value: "{{ .Values.glpi.dbHost }}"
+            - name: GLPI_DB
+              value: "{{ .Values.glpi.dbName }}"
+            - name: GLPI_DB_USER
+              value: "{{ .Values.glpi.dbUser }}"
+            - name: GLPI_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "glpi.fullname" . }}-db
+                  key: GLPI_DB_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 20
+{{- if .Values.persistence.enabled }}
+          volumeMounts:
+            - name: glpi-content
+              mountPath: {{ .Values.persistence.mountPath }}
+{{- end }}
+{{- if .Values.persistence.enabled }}
+      volumes:
+        - name: glpi-content
+          persistentVolumeClaim:
+            claimName: {{ include "glpi.fullname" . }}-content
+{{- end }}

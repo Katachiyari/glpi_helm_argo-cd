@@ -1,0 +1,18 @@
+replicaCount: 2
+
+image:
+  tag: latest
+
+ingress:
+  enabled: true
+  host: glpi.prod.local
+
+persistence:
+  storageClass: nfs-static
+  size: 20Gi
+
+glpi:
+  dbHost: "10.20.71.10:3306"
+  dbName: "glpi"
+  dbUser: "glpi_user"
+  dbPassword: ""
