@@ -8,7 +8,11 @@ spec:
   source:
     repoURL: https://github.com/Katachiyari/argo_cd/glpi
     targetRevision: main
-    path: glpi
+    path: .
+    helm:
+      releaseName: glpi
+      valueFiles:
+        - values.dev.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: glpi
