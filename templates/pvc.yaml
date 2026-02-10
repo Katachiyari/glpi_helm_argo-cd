@@ -3,6 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "glpi.fullname" . }}-content
+  namespace: {{ .Release.Namespace }}
   labels:
 {{ include "glpi.labels" . | nindent 4 }}
 spec:

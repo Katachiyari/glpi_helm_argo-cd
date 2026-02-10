@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "glpi.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
 {{ include "glpi.labels" . | nindent 4 }}
 spec:
